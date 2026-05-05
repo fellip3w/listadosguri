@@ -1,0 +1,45 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Common helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Promessa validation
+    function isValidPromessa(data) {
+      return data.keys().hasAll(['title', 'createdAt']) &&
+             data.keys().size() <= 4 &&
+             data.title is string && data.title.size() <= 200 &&
+             (data.description == null || (data.description is string && data.description.size() <= 1000)) &&
+             (data.funnyStatus == null || (data.funnyStatus is string && data.funnyStatus.size() <= 100)) &&
+             data.createdAt is timestamp;
+    }
+
+    match /promessas/{promessaId} {
+      allow read: if true;
+      allow create: if isValidPromessa(incoming());
+      allow update: if isValidPromessa(incoming()) && 
+                    incoming().diff(existing()).affectedKeys().hasOnly(['title', 'description', 'funnyStatus']);
+      allow delete: if false;
+    }
+  }
+}

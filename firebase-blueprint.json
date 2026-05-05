@@ -1,0 +1,35 @@
+{
+  "entities": {
+    "Promessa": {
+      "title": "Promessa",
+      "description": "Um registro de algo que os guri prometeram e não fizeram.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "O título da promessa."
+        },
+        "description": {
+          "type": "string",
+          "description": "Detalhes adicionais da promessa (opcional)."
+        },
+        "funnyStatus": {
+          "type": "string",
+          "description": "Status engraçado."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Data do registro."
+        }
+      },
+      "required": ["title", "createdAt"]
+    }
+  },
+  "firestore": {
+    "promessas": {
+      "schema": "Promessa",
+      "description": "Coleção de promessas dos guri."
+    }
+  }
+}
